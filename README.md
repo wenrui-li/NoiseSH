@@ -12,4 +12,4 @@ This repository contains code supporting the text "Accounting for Network Noise 
 
 ## Data
 
-* example data: data.Rdata
+* Example data: data.Rdata
