@@ -5,8 +5,8 @@ This repository contains code supporting the text "Accounting for Network Noise 
 
 ## Code
 
-* MCMC algorithm   : MCMC.cpp
-* Run MCMC with user-specified parameters : runMCMC.R
+* MCMC algorithm: MCMC.cpp
+* Run MCMC with user-specified parameters: runMCMC.R
 
 
 
