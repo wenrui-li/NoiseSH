@@ -232,80 +232,80 @@ List MCMC(arma::vec y, arma::mat X, arma::mat A_tilde,arma::mat A_star, int n_it
     tau2_inv_u10_star = rinvgauss(1.0/sigma_u10_star/std::abs(u10_star-u10_star_mean_prior),1.0/pow(sigma_u10_star,2.0));
 
     // update u0
-    a.diag().ones();
-    for (int j=0; j<p; ++j) {
-        index_tmp = find(a.col(j)==0.0);
-        if(index_tmp.n_elem > 0 ) {
-            U0j_tilde = u0.submat(index_tmp,indices_r);
-            U0j_tilde = U0j_tilde.tail_cols(r-1);
-            w0j_tilde = W0_tilde.unsafe_col(j).elem(index_tmp);
-            kappa0j_tilde = Kappa_tilde.unsafe_col(j).elem(index_tmp);
-            W0j_tilde = arma::diagmat(w0j_tilde);
-            Z0j_tilde = kappa0j_tilde/w0j_tilde+u00;
-            V0j_tilde = U0j_tilde.t()*W0j_tilde*U0j_tilde+Sigma0_tilde_inv;
-            V0j_tilde_inv=arma::inv_sympd(V0j_tilde);
-            U0j_tilde = arma::mvnrnd(V0j_tilde_inv*(U0j_tilde.t()*W0j_tilde*Z0j_tilde+Sigma0_tilde_inv*(u0_mean_prior_1-Sigma0_part1*(arma::conv_to< arma::vec >::from(u0_star.submat(j,1,j,r_star-1)) -u0_mean_prior_2) ) ), V0j_tilde_inv);
-            u0.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(U0j_tilde);
-            } else {
-           u0.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u0_mean_prior_1-Sigma0_part1*(arma::conv_to< arma::vec >::from(u0_star.submat(j,1,j,r_star-1)) -u0_mean_prior_2) ,Sigma0_tilde));
-        }
-    }
+      a.diag().ones();
+      for (int j=0; j<p; ++j) {
+          index_tmp = find(a.col(j)==0.0);
+          if(index_tmp.n_elem > 0 ) {
+              U0j_tilde = u0.submat(index_tmp,indices_r);
+              U0j_tilde = U0j_tilde.tail_cols(r-1);
+              w0j_tilde = W0_tilde.unsafe_col(j).elem(index_tmp);
+              kappa0j_tilde = Kappa_tilde.unsafe_col(j).elem(index_tmp);
+              W0j_tilde = arma::diagmat(w0j_tilde);
+              Z0j_tilde = kappa0j_tilde/w0j_tilde+u00;
+              V0j_tilde = U0j_tilde.t()*W0j_tilde*U0j_tilde+Sigma0_tilde_inv;
+              V0j_tilde_inv=arma::inv_sympd(V0j_tilde);
+              U0j_tilde = arma::mvnrnd(V0j_tilde_inv*(U0j_tilde.t()*W0j_tilde*Z0j_tilde+Sigma0_tilde_inv*(u0_mean_prior_1+Sigma0_part1*(arma::conv_to< arma::vec >::from(u0_star.submat(j,1,j,r_star-1)) -u0_mean_prior_2) ) ), V0j_tilde_inv);
+              u0.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(U0j_tilde);
+              } else {
+             u0.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u0_mean_prior_1+Sigma0_part1*(arma::conv_to< arma::vec >::from(u0_star.submat(j,1,j,r_star-1)) -u0_mean_prior_2) ,Sigma0_tilde));
+          }
+      }
     
     // update u0_star
-    for (int j=0; j<p; ++j) {
-        index_tmp = find(a.col(j)==0.0);
-        if(index_tmp.n_elem > 0 ) {
-            U0j_star = u0_star(index_tmp,indices_r_star);
-            w0j_star = W0_star.unsafe_col(j).elem(index_tmp);
-            kappa0j_star = Kappa_star.unsafe_col(j).elem(index_tmp);
-            W0j_star = arma::diagmat(w0j_star);
-            Z0j_star = kappa0j_star/w0j_star+u00_star;
-            V0j_star = U0j_star.t()*W0j_star*U0j_star+Sigma0_star_inv;
-            V0j_star_inv=arma::inv_sympd(V0j_star);
-            U0j_star = arma::mvnrnd(V0j_star_inv*(U0j_star.t()*W0j_star*Z0j_star+Sigma0_star_inv*(u0_mean_prior_2-Sigma0_part2*(arma::conv_to< arma::vec >::from(u0.submat(j,1,j,r-1)) -u0_mean_prior_1) ) ), V0j_star_inv);
-            u0_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(U0j_star);
-            } else {
-           u0_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u0_mean_prior_2-Sigma0_part2*(arma::conv_to< arma::vec >::from(u0.submat(j,1,j,r-1)) -u0_mean_prior_1) ,Sigma0_star));
-        }
-    }
-    a.diag().zeros();
-    
+      for (int j=0; j<p; ++j) {
+          index_tmp = find(a.col(j)==0.0);
+          if(index_tmp.n_elem > 0 ) {
+              U0j_star = u0_star(index_tmp,indices_r_star);
+              w0j_star = W0_star.unsafe_col(j).elem(index_tmp);
+              kappa0j_star = Kappa_star.unsafe_col(j).elem(index_tmp);
+              W0j_star = arma::diagmat(w0j_star);
+              Z0j_star = kappa0j_star/w0j_star+u00_star;
+              V0j_star = U0j_star.t()*W0j_star*U0j_star+Sigma0_star_inv;
+              V0j_star_inv=arma::inv_sympd(V0j_star);
+              U0j_star = arma::mvnrnd(V0j_star_inv*(U0j_star.t()*W0j_star*Z0j_star+Sigma0_star_inv*(u0_mean_prior_2+Sigma0_part2*(arma::conv_to< arma::vec >::from(u0.submat(j,1,j,r-1)) -u0_mean_prior_1) ) ), V0j_star_inv);
+              u0_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(U0j_star);
+              } else {
+             u0_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u0_mean_prior_2+Sigma0_part2*(arma::conv_to< arma::vec >::from(u0.submat(j,1,j,r-1)) -u0_mean_prior_1) ,Sigma0_star));
+          }
+      }
+      a.diag().zeros();
+      
        // update u1
-       for (int j=0; j<p; ++j) {
-         index_tmp = find(a.col(j)==1.0);
-         if(index_tmp.n_elem > 0 ) {
-           U1j_tilde = u1(index_tmp,indices_r);
-           w1j_tilde = W1_tilde.unsafe_col(j).elem(index_tmp);
-           kappa1j_tilde = Kappa_tilde.unsafe_col(j).elem(index_tmp);
-           W1j_tilde = arma::diagmat(w1j_tilde);
-           Z1j_tilde = kappa1j_tilde/w1j_tilde+u10;
-           V1j_tilde = U1j_tilde.t()*W1j_tilde*U1j_tilde+Sigma1_tilde_inv;
-           V1j_tilde_inv=arma::inv_sympd(V1j_tilde);
-           U1j_tilde = arma::mvnrnd(V1j_tilde_inv*(U1j_tilde.t()*W1j_tilde*Z1j_tilde+Sigma1_tilde_inv*(u1_mean_prior_1-Sigma1_part1*(arma::conv_to< arma::vec >::from(u1_star.submat(j,1,j,r_star-1)) -u1_mean_prior_2) ) ), V1j_tilde_inv);
-           u1.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(U1j_tilde);
-         } else {
-           u1.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u1_mean_prior_1-Sigma1_part1*(arma::conv_to< arma::vec >::from(u1_star.submat(j,1,j,r_star-1)) -u1_mean_prior_2) ,Sigma1_tilde));
-         }
-       }
-       
+      for (int j=0; j<p; ++j) {
+        index_tmp = find(a.col(j)==1.0);
+        if(index_tmp.n_elem > 0 ) {
+          U1j_tilde = u1(index_tmp,indices_r);
+          w1j_tilde = W1_tilde.unsafe_col(j).elem(index_tmp);
+          kappa1j_tilde = Kappa_tilde.unsafe_col(j).elem(index_tmp);
+          W1j_tilde = arma::diagmat(w1j_tilde);
+          Z1j_tilde = kappa1j_tilde/w1j_tilde+u10;
+          V1j_tilde = U1j_tilde.t()*W1j_tilde*U1j_tilde+Sigma1_tilde_inv;
+          V1j_tilde_inv=arma::inv_sympd(V1j_tilde);
+          U1j_tilde = arma::mvnrnd(V1j_tilde_inv*(U1j_tilde.t()*W1j_tilde*Z1j_tilde+Sigma1_tilde_inv*(u1_mean_prior_1+Sigma1_part1*(arma::conv_to< arma::vec >::from(u1_star.submat(j,1,j,r_star-1)) -u1_mean_prior_2) ) ), V1j_tilde_inv);
+          u1.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(U1j_tilde);
+        } else {
+          u1.submat(j,1,j,r-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u1_mean_prior_1+Sigma1_part1*(arma::conv_to< arma::vec >::from(u1_star.submat(j,1,j,r_star-1)) -u1_mean_prior_2) ,Sigma1_tilde));
+        }
+      }
+      
        // update u1_star
-       for (int j=0; j<p; ++j) {
-         index_tmp = find(a.col(j)==1.0);
-         if(index_tmp.n_elem > 0 ) {
-           U1j_star = u1_star(index_tmp,indices_r_star);
-           w1j_star = W1_star.unsafe_col(j).elem(index_tmp);
-           kappa1j_star = Kappa_star.unsafe_col(j).elem(index_tmp);
-           W1j_star = arma::diagmat(w1j_star);
-           Z1j_star = kappa1j_star/w1j_star+u10_star;
-           V1j_star = U1j_star.t()*W1j_star*U1j_star+Sigma1_star_inv;
-           V1j_star_inv=arma::inv_sympd(V1j_star);
-           U1j_star = arma::mvnrnd(V1j_star_inv*(U1j_star.t()*W1j_star*Z1j_star+Sigma1_star_inv*(u1_mean_prior_2-Sigma1_part2*(arma::conv_to< arma::vec >::from(u1.submat(j,1,j,r-1)) -u1_mean_prior_1) ) ), V1j_star_inv);
-           u1_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(U1j_star);
-         } else {
-           u1_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u1_mean_prior_2-Sigma1_part2*(arma::conv_to< arma::vec >::from(u1.submat(j,1,j,r-1)) -u1_mean_prior_1) ,Sigma1_star));
-         }
-       }
-
+      for (int j=0; j<p; ++j) {
+        index_tmp = find(a.col(j)==1.0);
+        if(index_tmp.n_elem > 0 ) {
+          U1j_star = u1_star(index_tmp,indices_r_star);
+          w1j_star = W1_star.unsafe_col(j).elem(index_tmp);
+          kappa1j_star = Kappa_star.unsafe_col(j).elem(index_tmp);
+          W1j_star = arma::diagmat(w1j_star);
+          Z1j_star = kappa1j_star/w1j_star+u10_star;
+          V1j_star = U1j_star.t()*W1j_star*U1j_star+Sigma1_star_inv;
+          V1j_star_inv=arma::inv_sympd(V1j_star);
+          U1j_star = arma::mvnrnd(V1j_star_inv*(U1j_star.t()*W1j_star*Z1j_star+Sigma1_star_inv*(u1_mean_prior_2+Sigma1_part2*(arma::conv_to< arma::vec >::from(u1.submat(j,1,j,r-1)) -u1_mean_prior_1) ) ), V1j_star_inv);
+          u1_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(U1j_star);
+        } else {
+          u1_star.submat(j,1,j,r_star-1) = arma::conv_to< arma::rowvec >::from(arma::mvnrnd(u1_mean_prior_2+Sigma1_part2*(arma::conv_to< arma::vec >::from(u1.submat(j,1,j,r-1)) -u1_mean_prior_1) ,Sigma1_star));
+        }
+      }
+      
     // update proposal variance
     if((i+1)%k==0){
       s = (i+1)/k;
